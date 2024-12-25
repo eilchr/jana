@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>i love you</title>
+  <style>
+    body {
+      font-family: "Courier New", Courier, monospace;
+      background-color: #360a36;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    /*interactive img*/
+    .interactive-image {
+      width: 200px;
+      transition: transform 0.3s ease;
+      cursor: grab;
+      position: absolute;
+    }
+
+    .interactive-image:hover {
+      transform: scale(1.1);
+    }
+
+    .interactive-image:active {
+      cursor: grabbing;
+    }
+
+    /*pixel popup*/
+    .popup {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 300px;
+      background-color: #fff;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0px #000;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ccc;
+      padding: 5px 10px;
+      border-bottom: 4px solid #000;
+    }
+
+    .popup-header button {
+      background-color: #9c4242;
+      border: none;
+      color: #fff;
+      padding: 2px 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .popup-header button:hover {
+      background-color: #661919;
+    }
+
+    /* textbox */
+    .textbox {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ccc;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .textbox p {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .textbox button {
+      font-family: "Courier New", Courier, monospace;
+      padding: 5px 10px;
+      background-color: #661919;
+      color: white;
+      border: white;
+      box-shadow: 0 4px 6px rgba(83, 83, 83, 0.1);
+      border-radius: 1px;
+      cursor: pointer;
+    }
+
+    .textbox button:hover {
+      background-color: #9c4242;
+    }
+    
+  </style>
+</head>
+<body>
+  <img 
+    src="images/jar.gif" 
+    alt="jar" 
+    class="interactive-image" 
+    draggable="true"
+    onmousedown="startDrag(event)" 
+    onclick="showTextbox()"
+  >
+
+  <img 
+    src="images/openme.png" 
+    alt="open me" 
+    class="interactive-image" 
+    draggable="true" 
+    onmousedown="startDrag(event)" 
+    onclick="openPopup()"
+    style="position: absolute; top: 7px; right: 7px; width: 100px; height: auto;"
+  >
+
+  <div class="popup" id="popup">
+      <div class="popup-header">
+          <span>open_me.txt</span>
+          <button onclick="closePopup()">X</button>
+      </div>
+      <div id="popup-content">
+      </div>
+  </div>
+
+  <div class="textbox" id="textbox">
+    <p id="random-message">placeholder text.</p>
+    <button onclick="hideTextbox()">okay</button>
+  </div>
+
+  <script>
+    // drag
+    let draggedElement;
+
+    function startDrag(event) {
+      draggedElement = event.target;
+
+      const offsetX = event.offsetX;
+      const offsetY = event.offsetY;
+
+      document.onmousemove = function (e) {
+        draggedElement.style.left = e.pageX - offsetX + 'px';
+        draggedElement.style.top = e.pageY - offsetY + 'px';
+      };
+
+      document.onmouseup = function () {
+        document.onmousemove = null;
+        document.onmouseup = null;
+      };
+    }
+
+    // mesgs
+    const messages = [
+      "i love you", "you have the most beautiful, enchanting eyes.", "you are so incredibly talented. i couldn't even begin to list all the things you are so unbelievably good at. i hope you realise how invaluable and rare your talents are.", "you fill me with so many emotions i never thought i could ever experience and not a single one is negative", "you are the most passionate soul with the most passionate heart.",
+      "i treasure you so incredibly much. you are treasured.", "your existence is more precious than any possible wordly treasure.", "you make my heart happy", "you are perfect. not in spite of your imperfections but because of them. jana is perfect, every piece of her is. even the pieces she doesn't like.", "you are the light of so many people's days",
+      "your love is beautiful. i hope every soul, broken or otherwise, gets to experience the love you so willingly give from the bottom of your heart. your love is healing.", "you deserve the world and so much more. you deserve more than the universe and anything it can offer.", "you are stronger than you give yourself credit for. i am so proud of you.", "you are beautiful. your beauty could kill,", "your happiness is contagious. your smile makes me smile.",
+      "you have the most radiant smile. i love your lips and your teeth and everything else about that smile. please never stop smiling.", "you are worth so much. you are worthy of good things.", "you are worthy of receiving the same love you give.", "you are a beautiful person, inside and out.", "your voice is so impossibly soothing. i could listen to you forever and never get tired of hearing the way you speak.",
+      "you are such a lovely singer. your voice could cure the sickest man.", "you can do this. you can get through all of this. you are stronger and bigger than what is happening to you.", "you will always be my favourite person. forever. until the end of time.", "you are so important to the people around you.", "you are beautiful. you are loved. you are cherished. there are so many people who are grateful that you are still here. never forget that.",
+      "you have an unearthly ability to capture what is intangible in words. never stop writing. your work can change lives.", "did you drink water today? did you eat well? your body is deserving of love.", "i love you", "did you sleep well? your mind is deserving of sweet dreams.", "your friends love you and care about you. even in times where its difficult to see, remember that you are so loved. more than you ever realise.",
+      "you are safe. everything will be okay. things will work out.", "you have everything under control. things will only get better from here. you are safe.", "take a deep breath. things will be okay. you will be okay.", "i love you", "everything is okay. learning is a process. you have accomplished so much and you will only accomplish more.",
+      "i am so unbelievably proud of you. i am proud of you and how far you have come.", "you deserve happiness. you are worthy of love. you are worthy of all that is positive and beautiful.", "you look gorgeous today. you always do. but you look the prettiest when you smile.", "you do not have to prove your worth to anyone. you are loved for simply existing. always will be.", "you are so capable and so intelligent. your mind is a beautiful thing. i love the way you think.",
+      "no situation is ever greater than you. you can make it through this. i believe in you.", "you are capable, you are resilient, you can do this.", "you complete me.", "every minute i spend with you is a minute i live happy.", "i want to give you the biggest hug and never let go.",
+      "you are so precious to me. everything about you is. every piece of you is precious. there is no one like you and there never will be.", "you think in such beautiful ways. you make me want to believe the good in people.", "you will always have me. always. i will always be here for you no matter what.", "the world shines brighter with you in it. i am so grateful you are alive.", "im sure you got told this already but you look STUNNING today like WOA",
+      "you have such an immaculate sense of style. you glow in everything you wear.", "i want to be around you. on both the good days and the bad.", "you dont have to try to be beautiful. you already are, in every imaginable way.", "your confidence is powerful. never stop believing in yourself.", "i love your pretty moles and birthmarks. i will be eternally envious of your past lover.",
+      "i love you. i love you so much. i will always love you. even if i don't say it as much as id like to.", "your presence is familiar and so comforting.", "you are doing such a wonderful, wonderful job. keep going.", "you are the prettiest girl with the prettiest heart and the prettiest mind and the prettiest soul.", "no one in the world could ever compare to you. you are one of a kind. you are special.",
+      "you are doing so well. i am proud of you for working so hard.", "if we were kitties we would sit on top of cars and scratch their windows and then cuddle until the owners came to shoo us away", "your rage is a powerful and beautiful thing.", "i trust you with both my life and death.", "take a deep breath. you are safe here. nothing can hurt you.",
+      "you are not your bad thoughts. you are so much more.", "everything will get better. i promise.", "everything will work out. even if it doesn't seem like it. everything will be okay. things will work out in your favour.", "you are the strongest girl i know. you have been through so much yet still have the courage to push on. i am so proud of you.", "you are poetry. you are art. you are all the beautiful things you write about.",
+      "YOU GOT THIS!!! YOU CAN DO IT!!! YOU!! ARE!! AWESOME!!!! YOU ARE SO AWESOME!!! I COULD SAY IT OVER AND OVER AND OVER AGAIN", "things will pass. things will get better. stay strong.", "it is okay to not always utilise your maximum potential. you are capable of so many great things but you do not need to prove it to anyone. your potential will always exist within you.", "(づ> v <)づ♡", "kissie kissie mwah mwah",
+      "you are sp SEXY every time you walk the ground erupts in FLAMES you wre literally!!!! the baddest!!! woman !! to EVER walk EARTH", "you have the most beautiful hands. your hands can love and create so gently. when i finally hold them in mine i will never let go.", "you are the best thing that has ever happened to countless people. including me. especially me.", "you are a cosmic miracle. i am so happy you are alive.", "you will pull through this. i love you.",
+      "i am sending you the biggest hug in three two one can you feel it that is me hugging you", "don't say bad things about yourself. that's my best friend you're talking about.", "you deserve all the good things that have happened to you and will happen to you.", "you are my prettiest girl :3", "YOU ARE LOVED!!! BY!!! MEEEEEE!!!!!",
+    ];
+
+    let shuffledMessages = shuffleArray([...messages]);
+
+    function shuffleArray(array) {
+      const shuffled = [...array]; 
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function showTextbox() {
+      if (shuffledMessages.length === 0) {
+        shuffledMessages = shuffleArray([...messages]); 
+      }
+
+      const randomMessage = shuffledMessages.pop(); 
+      document.getElementById('random-message').textContent = randomMessage;
+      
+      const colors = ['#F28888', '#FECFF8', '#FED6D1', '#CAEB98', '#FEF4AC', '#B8EAFE', '#97BFE5'];
+      document.getElementById('textbox').style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+      document.getElementById('textbox').style.display = 'block';
+    }
+
+    function hideTextbox() {
+      document.getElementById('textbox').style.display = 'none';
+    }
+
+    function openPopup() {
+      const popup = document.getElementById('popup');
+      popup.style.display = 'block';
+
+      fetch('open_me.txt')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('popup-content').innerText = data;
+        })
+        .catch(() => {
+          document.getElementById('popup-content').innerText = 'fail. hopefully this never pops up.';
+        });
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
